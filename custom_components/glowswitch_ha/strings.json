@@ -1,0 +1,22 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Select GlowSwitch Device",
+        "description": "If your device is not listed, please ensure it is powered on and within Bluetooth range.",
+        "data": {
+          "address": "Device"
+        }
+      },
+      "confirm": {
+        "title": "Confirm Device Addition",
+        "description": "Do you want to add the GlowSwitch device named `{name}`?"
+      }
+    },
+    "abort": {
+      "no_devices_found": "No unconfigured GlowSwitch devices could be found.",
+      "already_configured": "This device is already configured."
+    }
+  },
+  "flow_title": "{name}"
+}
