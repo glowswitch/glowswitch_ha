@@ -1,6 +1,6 @@
-# GlowSwitch HA
+# glowswitch HA
 
-A Home Assistant integration for controlling GlowSwitch Bluetooth LE devices locally.
+A Home Assistant integration for controlling glowswitch Bluetooth LE devices locally.
 
 ## Features
 

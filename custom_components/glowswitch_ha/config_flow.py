@@ -33,7 +33,6 @@ class GlowSwitchConfigFlow(ConfigFlow, domain=DOMAIN):
         """Handle bluetooth discovery."""
         await self.async_set_unique_id(discovery_info.address)
         self._abort_if_unique_id_configured()
-
         self.context["title_placeholders"] = {"name": discovery_info.name}
         return await self.async_step_confirm()
 
@@ -42,11 +41,9 @@ class GlowSwitchConfigFlow(ConfigFlow, domain=DOMAIN):
     ) -> ConfigFlowResult:
         """Confirm a discovered device."""
         name = self.context["title_placeholders"]["name"]
-
         if user_input is not None:
             return self.async_create_entry(title=name, data={})
 
-        self._set_confirm_only()
         return self.async_show_form(
             step_id="confirm",
             description_placeholders={"name": name},
@@ -60,9 +57,9 @@ class GlowSwitchConfigFlow(ConfigFlow, domain=DOMAIN):
             address = user_input[CONF_ADDRESS]
             await self.async_set_unique_id(address, raise_on_progress=False)
             self._abort_if_unique_id_configured()
-            
             name = self._discovered_devices[address]
-            return self.async_create_entry(title=name, data={})
+            self.context["title_placeholders"] = {"name": name}
+            return await self.async_step_confirm()
 
         current_addresses = self._async_current_ids()
         for discovery_info in async_discovered_service_info(self.hass):
