@@ -1,0 +1,11 @@
+{
+  "domain": "glowswitch_ha",
+  "name": "GlowSwitch HA",
+  "config_flow": true,
+  "documentation": "https://github.com/nannan/new-glowswitch-ha",
+  "issue_tracker": "https://github.com/nannan/new-glowswitch-ha/issues",
+  "codeowners": [],
+  "requirements": ["bleak-retry-connector==3.4.0"],
+  "version": "0.1.0",
+  "iot_class": "local_polling"
+}
