@@ -4,6 +4,8 @@ from __future__ import annotations
 import logging
 from typing import Any
 
+import voluptuous as vol
+
 from homeassistant.components.bluetooth import (
     BluetoothServiceInfoBleak,
     async_discovered_service_info,
@@ -24,6 +26,7 @@ class GlowSwitchConfigFlow(ConfigFlow, domain=DOMAIN):
     def __init__(self) -> None:
         """Initialize the config flow."""
         self._discovery_info: BluetoothServiceInfoBleak | None = None
+        self._discovered_devices: dict[str, BluetoothServiceInfoBleak] = {}
 
     async def async_step_bluetooth(
         self, discovery_info: BluetoothServiceInfoBleak
@@ -56,8 +59,13 @@ class GlowSwitchConfigFlow(ConfigFlow, domain=DOMAIN):
     ) -> FlowResult:
         """Handle the user step to pick a device."""
         if user_input is not None:
-            # Handle user-initiated setup if needed, for now we focus on discovery
-            return self.async_abort(reason="not_supported")
+            address = user_input["address"]
+            await self.async_set_unique_id(address, raise_on_progress=False)
+            self._abort_if_unique_id_configured()
+            discovery_info = self._discovered_devices[address]
+            self._discovery_info = discovery_info
+            self.context["title_placeholders"] = {"name": discovery_info.name}
+            return await self.async_step_confirm()
 
         current_addresses = self._async_current_ids()
         for discovery_info in async_discovered_service_info(self.hass):
@@ -65,6 +73,29 @@ class GlowSwitchConfigFlow(ConfigFlow, domain=DOMAIN):
                 continue
 
             if GLOWSWITCH_SERVICE_UUID in discovery_info.service_uuids or GLOWDIM_SERVICE_UUID in discovery_info.service_uuids:
-                return await self.async_step_bluetooth(discovery_info)
+                self._discovered_devices[discovery_info.address] = discovery_info
 
-        return self.async_abort(reason="no_devices_found")
+        if not self._discovered_devices:
+            return self.async_abort(reason="no_devices_found")
+
+        # If only one device is found, we go straight to confirmation
+        if len(self._discovered_devices) == 1:
+            self._discovery_info = list(self._discovered_devices.values())[0]
+            await self.async_set_unique_id(self._discovery_info.address)
+            self._abort_if_unique_id_configured()
+            self.context["title_placeholders"] = {"name": self._discovery_info.name}
+            return await self.async_step_confirm()
+
+        return self.async_show_form(
+            step_id="user",
+            data_schema=vol.Schema(
+                {
+                    vol.Required("address"): vol.In(
+                        {
+                            address: info.name
+                            for address, info in self._discovered_devices.items()
+                        }
+                    )
+                }
+            ),
+        )

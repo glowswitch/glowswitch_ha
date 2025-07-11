@@ -46,17 +46,17 @@ class GlowLight(LightEntity):
     """Base class for GlowSwitch lights."""
 
     _attr_assumed_state = True
-    _attr_has_entity_name = True
 
     def __init__(self, ble_device) -> None:
         """Initialize the light."""
         self._ble_device = ble_device
         self._client: BleakClientWithServiceCache | None = None
+        self._attr_name = ble_device.name
         self._attr_unique_id = ble_device.address
         self._attr_device_info = DeviceInfo(
             connections={("bluetooth", ble_device.address)},
             name=ble_device.name,
-            manufacturer="GlowSwitch",
+            manufacturer="glowswitch",
         )
 
     async def async_added_to_hass(self) -> None:
@@ -91,7 +91,6 @@ class GlowSwitch(GlowLight):
     def __init__(self, ble_device) -> None:
         """Initialize the GlowSwitch."""
         super().__init__(ble_device)
-        self._attr_name = "Switch"
         self._attr_supported_color_modes = {ColorMode.ONOFF}
         self._attr_is_on = False
 
@@ -114,7 +113,6 @@ class GlowDim(GlowLight):
     def __init__(self, ble_device) -> None:
         """Initialize the GlowDim."""
         super().__init__(ble_device)
-        self._attr_name = "Dimmable Light"
         self._attr_supported_color_modes = {ColorMode.BRIGHTNESS}
         self._attr_supported_features = LightEntityFeature.TRANSITION
         self._attr_is_on = False
