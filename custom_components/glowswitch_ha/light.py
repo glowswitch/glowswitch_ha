@@ -92,6 +92,7 @@ class GlowSwitch(GlowLight):
         """Initialize the GlowSwitch."""
         super().__init__(ble_device)
         self._attr_supported_color_modes = {ColorMode.ONOFF}
+        self._attr_color_mode = ColorMode.ONOFF
         self._attr_is_on = False
 
     async def async_turn_on(self, **kwargs: Any) -> None:
@@ -114,6 +115,7 @@ class GlowDim(GlowLight):
         """Initialize the GlowDim."""
         super().__init__(ble_device)
         self._attr_supported_color_modes = {ColorMode.BRIGHTNESS}
+        self._attr_color_mode = ColorMode.BRIGHTNESS
         self._attr_supported_features = LightEntityFeature.TRANSITION
         self._attr_is_on = False
         self._attr_brightness = 0
