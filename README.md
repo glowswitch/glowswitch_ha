@@ -1,12 +1,12 @@
-# glowswitch HA
+# glowswitch BLE Home Assistant integration
 
 A Home Assistant integration for controlling glowswitch Bluetooth LE devices locally.
 
 ## Features
 
 *   **Local Control:** Communicates directly with your devices over Bluetooth Low Energy for a fast and private experience.
-*   **Auto-Discovery:** Automatically discovers and configures `glowswitch` and `glowdim` devices.
-*   **On/Off Control:** Provides on/off control for `glowswitch` devices.
+*   **Auto-Discovery:** Automatically discovers and configures glowswitch devices.
+*   **On/Off Control:** Provides on/off control for glowswitch devices.
 *   **Robust Connection:** Automatically handles device disconnections and reconnections (e.g., after a power cycle).
 
 ## Installation
@@ -23,4 +23,4 @@ This integration uses auto-discovery to find and set up devices.
 2.  If your glowswitch device is powered on and within range, it will appear as a discovered device.
 3.  Click **Configure** on the discovered device card to add it to Home Assistant.
 
-A light entity will be created for your device, which you can then add to your Lovelace dashboards.
+A light entity will be created for your device, which you can then add to your dashboards!
