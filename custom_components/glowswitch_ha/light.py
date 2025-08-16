@@ -50,7 +50,6 @@ class GlowLight(LightEntity):
     def __init__(self, ble_device) -> None:
         """Initialize the light."""
         self._ble_device = ble_device
-        self._client: BleakClientWithServiceCache | None = None
         self._attr_name = ble_device.name
         self._attr_unique_id = ble_device.address
         self._attr_device_info = DeviceInfo(
@@ -59,28 +58,15 @@ class GlowLight(LightEntity):
             manufacturer="glowswitch",
         )
 
-    async def async_added_to_hass(self) -> None:
-        """Run when entity about to be added to hass."""
-        await super().async_added_to_hass()
-        self._client = await establish_connection(
-            BleakClientWithServiceCache,
-            self._ble_device,
-            self.unique_id,
-        )
-
-    async def async_will_remove_from_hass(self) -> None:
-        """Run when entity will be removed from hass."""
-        if self._client:
-            await self._client.disconnect()
-        await super().async_will_remove_from_hass()
-
     async def _send_data(self, data: bytearray) -> None:
         """Send data to the light."""
-        if not self._client:
-            _LOGGER.debug("No client available")
-            return
         try:
-            await self._client.write_gatt_char(LIGHT_CHARACTERISTIC_UUID, data, response=True)
+            client = await establish_connection(
+                BleakClientWithServiceCache,
+                self._ble_device,
+                self.unique_id,
+            )
+            await client.write_gatt_char(LIGHT_CHARACTERISTIC_UUID, data, response=True)
         except Exception as e:
             _LOGGER.error("Error sending data: %s", e)
 
